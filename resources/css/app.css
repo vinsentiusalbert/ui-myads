@@ -1,0 +1,35 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Space Grotesk', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --color-brand-teal: #00a699;
+    --color-brand-teal-deep: #007f73;
+    --color-brand-blue: #0058a3;
+    --color-brand-lime: #beff28;
+    --color-surface: #f2f7f5;
+}
+
+@layer base {
+    :root {
+        --brand-teal: var(--color-brand-teal);
+        --brand-teal-deep: var(--color-brand-teal-deep);
+        --brand-blue: var(--color-brand-blue);
+        --brand-lime: var(--color-brand-lime);
+        --surface: var(--color-surface);
+    }
+
+    body {
+        min-height: 100vh;
+    }
+}
+
+@utility font-display {
+    font-family: var(--font-display);
+}
