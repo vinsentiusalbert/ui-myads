@@ -13,13 +13,12 @@
         @php
             $isWaTemplate = $channel === 'wa-business' && $menu === 'campaign-template';
             $isWaTemplateCreate = $isWaTemplate && request()->query('view') === 'create';
-            $templateRows = [
-                ['name' => 'idc_397_260414_ar4_simpati_wfh', 'date' => '14 Apr 2026', 'time' => '11:04 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Butuh kuota besar untuk Work From Home tapi budget terbatas? SIMPATI p...', 'status' => 'APPROVED'],
-                ['name' => 'idc_236_251105_ar4_hvc_local_bas...', 'date' => '05 Nov 2025', 'time' => '14:59 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Tabe ada Flash Sale Super Seru khusus untuk pelanggan Prioritas. Kuota 6...', 'status' => 'APPROVED'],
-                ['name' => 'idc_235_251105_ar4_hvc_spcial_off...', 'date' => '05 Nov 2025', 'time' => '14:52 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Karena Kamu Prioritas, Kenyamanan Harus Tanpa Batas. Dengan kuota bes...', 'status' => 'APPROVED'],
-                ['name' => 'idc_234_251105_ar4_hvc_churn_pu...', 'date' => '05 Nov 2025', 'time' => '14:51 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Kami merindukan Anda untuk menikmati benefit pelanggan Prioritas. Flash ...', 'status' => 'APPROVED'],
-                ['name' => 'idc_233_251105_ar4_hvc_urgency_...', 'date' => '05 Nov 2025', 'time' => '14:48 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Kuota besar 65GB hanya 5 hari di Flash Sales Super Seru, nikmati kuota be...', 'status' => 'APPROVED'],
-            ];
+            $isWaTemplateRead = $isWaTemplate && isset($templateRow);
+            $isWaTemplateForm = $isWaTemplateCreate || $isWaTemplateRead;
+            $templateRows = $templateRows ?? collect();
+            $templateCount = $templateCount ?? $templateRows->count();
+            $approvedTemplateCount = $approvedTemplateCount ?? $templateRows->where('status', 'APPROVED')->count();
+            $templateValue = fn (string $field, mixed $default = null) => old($field, $isWaTemplateRead ? $templateRow->{$field} : $default);
         @endphp
         <main class="portal-shell">
             <button type="button" class="portal-overlay" data-menu-close aria-label="Tutup menu"></button>
@@ -87,7 +86,7 @@
                                 </button>
                                 <div class="portal-subnav">
                                     @foreach ($navData['items'] as $navMenu => $navLabel)
-                                        <a href="{{ route('campaign.menu', ['channel' => $navChannel, 'menu' => $navMenu]) }}" class="portal-subnav__item {{ $channel === $navChannel && $menu === $navMenu ? 'portal-subnav__item--active' : '' }}">
+                                        <a href="{{ $navChannel === 'wa-business' && $navMenu === 'campaign-template' ? route('campaign-template.index') : route('campaign.menu', ['channel' => $navChannel, 'menu' => $navMenu]) }}" class="portal-subnav__item {{ $channel === $navChannel && $menu === $navMenu ? 'portal-subnav__item--active' : '' }}">
                                             <span class="portal-subnav__icon">◎</span>
                                             <span>{{ $navLabel }}</span>
                                         </a>
@@ -146,19 +145,31 @@
 
                 <div class="portal-content {{ $isWaTemplate ? 'portal-content--template-library' : '' }}">
                     @if ($isWaTemplate)
-                    @if ($isWaTemplateCreate)
+                    @if ($isWaTemplateForm)
                     <section class="template-builder-hero">
-                        <h1 class="template-builder-hero__title">Create Campaign Template</h1>
+                        <h1 class="template-builder-hero__title">{{ $isWaTemplateRead ? 'Read Campaign Template' : 'Create Campaign Template' }}</h1>
                     </section>
 
-                    <section class="template-builder-layout">
+                    @if ($errors->any())
+                        <section class="template-library-card">
+                            <strong>Template belum bisa disimpan.</strong>
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </section>
+                    @endif
+
+                    <form method="POST" action="{{ route('campaign-template.store') }}" enctype="multipart/form-data" class="template-builder-layout">
+                        @csrf
                         <div class="template-builder-main">
                             <article class="template-builder-card">
                                 <h2>Template Preview</h2>
                                 <p>Choose the category that best describes your message template. Then, select the type of message that you want to send.</p>
 
                                 <label class="template-builder-choice template-builder-choice--active">
-                                    <input type="radio" name="template_type" checked>
+                                    <input type="radio" name="template_type" value="simple_message" @checked($templateValue('template_type', 'simple_message') === 'simple_message') @disabled($isWaTemplateRead)>
                                     <span class="template-builder-choice__dot"></span>
                                     <span>
                                         <strong>Simple Message</strong>
@@ -167,7 +178,7 @@
                                 </label>
 
                                 <label class="template-builder-choice">
-                                    <input type="radio" name="template_type">
+                                    <input type="radio" name="template_type" value="carousel_cards" @checked($templateValue('template_type') === 'carousel_cards') @disabled($isWaTemplateRead)>
                                     <span class="template-builder-choice__dot"></span>
                                     <span>
                                         <strong>Carousel Cards</strong>
@@ -180,7 +191,23 @@
                                 <h2>Template name and language</h2>
                                 <div class="template-builder-field">
                                     <label>Name your template</label>
-                                    <input type="text" value="campaign_whatsapp">
+                                    <input type="text" name="name" value="{{ $templateValue('name', 'campaign_whatsapp') }}" required @readonly($isWaTemplateRead)>
+                                </div>
+
+                                <div class="template-builder-field">
+                                    <label>Category Template</label>
+                                    <select name="category" required @disabled($isWaTemplateRead)>
+                                        <option value="Single Banner" @selected($templateValue('category', 'Single Banner') === 'Single Banner')>Single Banner</option>
+                                        <option value="Carousel" @selected($templateValue('category') === 'Carousel')>Carousel</option>
+                                    </select>
+                                </div>
+
+                                <div class="template-builder-field">
+                                    <label>Language</label>
+                                    <select name="language" required @disabled($isWaTemplateRead)>
+                                        <option value="Indonesia" @selected($templateValue('language', 'Indonesia') === 'Indonesia')>Indonesia</option>
+                                        <option value="English" @selected($templateValue('language') === 'English')>English</option>
+                                    </select>
                                 </div>
                             </article>
 
@@ -190,11 +217,11 @@
 
                                 <div class="template-builder-field">
                                     <label>Header (optional)</label>
-                                    <select>
-                                        <option>None</option>
-                                        <option>Image</option>
-                                        <option>Video</option>
-                                        <option>Document</option>
+                                    <select name="header_type" @disabled($isWaTemplateRead)>
+                                        <option value="none" @selected($templateValue('header_type', 'none') === 'none')>None</option>
+                                        <option value="image" @selected($templateValue('header_type') === 'image')>Image</option>
+                                        <option value="video" @selected($templateValue('header_type') === 'video')>Video</option>
+                                        <option value="document" @selected($templateValue('header_type') === 'document')>Document</option>
                                     </select>
                                 </div>
 
@@ -202,9 +229,9 @@
                                     <label>Asset</label>
                                     <p class="template-builder-field__hint">You can upload videos, images, PDFs, or locations.</p>
                                     <label class="template-builder-upload" for="templateAssetInput">
-                                        <input type="file" id="templateAssetInput" class="template-builder-upload__input" accept="image/*">
+                                        <input type="file" id="templateAssetInput" name="asset" class="template-builder-upload__input" accept="image/*,application/pdf,video/mp4" @disabled($isWaTemplateRead)>
                                         <span class="template-builder-upload__icon">☁</span>
-                                        <strong id="templateAssetLabel">Upload an asset</strong>
+                                        <strong id="templateAssetLabel">{{ $isWaTemplateRead && $templateRow->asset_path ? basename($templateRow->asset_path) : 'Upload an asset' }}</strong>
                                         <small>(Ensure your asset meets the format and size requirement)</small>
                                         <span class="template-builder-upload__link">Learn more about supported format assets</span>
                                     </label>
@@ -222,7 +249,7 @@
                                         <button type="button">•</button>
                                         <button type="button">1.</button>
                                     </div>
-                                    <textarea id="templateBodyInput" placeholder="Write something awesome..."></textarea>
+                                    <textarea id="templateBodyInput" name="body" maxlength="1024" placeholder="Write something awesome..." required @readonly($isWaTemplateRead)>{{ $templateValue('body') }}</textarea>
                                     <span class="template-builder-editor__count" id="templateBodyCount">0 / 1024</span>
                                 </div>
 
@@ -233,13 +260,13 @@
 
                                 <div class="template-builder-field">
                                     <label>Footer (optional)</label>
-                                    <input type="text" maxlength="60">
+                                    <input type="text" name="footer" value="{{ $templateValue('footer') }}" maxlength="60" @readonly($isWaTemplateRead)>
                                 </div>
                             </article>
 
                             <article class="template-builder-card">
                                 <h2>Buttons</h2>
-                                <button type="button" class="template-builder-add-button" id="templateAddButton">
+                                <button type="button" class="template-builder-add-button" id="templateAddButton" @disabled($isWaTemplateRead)>
                                     <span>+</span>
                                     <span>Add Button</span>
                                 </button>
@@ -251,6 +278,15 @@
                                     <strong>We recomend adding the marketing op-out button</strong>
                                     <p>Allow customers to request to opout all marketing messages. this can help reduce blocks from customers and increase your quality rating</p>
                                 </div>
+
+                                <div class="template-builder-inline-actions">
+                                    <a href="{{ route('campaign-template.index') }}" class="template-builder-secondary">Cancel</a>
+                                    @if (! $isWaTemplateRead)
+                                    <button type="submit" class="template-builder-add-button">
+                                        <span>Save Template</span>
+                                    </button>
+                                    @endif
+                                </div>
                             </article>
                         </div>
 
@@ -259,7 +295,7 @@
                                 <h2>Template Preview</h2>
                                 <div class="template-builder-phone">
                                     <div class="template-builder-phone__message">
-                                        <img src="{{ asset('assets/logo.png') }}" alt="Preview asset" class="template-builder-phone__image" id="templatePreviewImage">
+                                        <img src="{{ $isWaTemplateRead && $templateRow->asset_path ? asset('storage/' . $templateRow->asset_path) : asset('assets/logo.png') }}" alt="Preview asset" class="template-builder-phone__image" id="templatePreviewImage">
                                         <div class="template-builder-phone__body" id="templatePreviewBody">
                                             Halo Pelanggan Setia ComboFit, kamu mendapatkan akses Exercise Plan GRATIS selama 30 hari 🔥
 
@@ -283,55 +319,62 @@
                                 </div>
                             </article>
                         </aside>
-                    </section>
+                    </form>
                     @else
                     <section class="template-library-hero">
                         <div>
                             <h1 class="template-library-hero__title">Template Message</h1>
                         </div>
-                        <a href="{{ route('campaign.menu', ['channel' => 'wa-business', 'menu' => 'campaign-template', 'view' => 'create']) }}" class="template-library-hero__cta">
+                        <a href="{{ route('campaign-template.index', ['view' => 'create']) }}" class="template-library-hero__cta">
                             <span>+</span>
                             <span>Create Template</span>
                         </a>
                     </section>
 
+                    @if (session('status'))
+                        <section class="template-library-card">
+                            <strong>{{ session('status') }}</strong>
+                        </section>
+                    @endif
+
                     <section class="template-library-card">
                         <div class="template-library-tabs">
                             <button type="button" class="template-library-tab template-library-tab--active">
                                 <span>All</span>
-                                <strong>117</strong>
+                                <strong>{{ $templateCount }}</strong>
                             </button>
                             <button type="button" class="template-library-tab">
                                 <span>Approved</span>
-                                <strong>117</strong>
+                                <strong>{{ $approvedTemplateCount }}</strong>
                             </button>
                         </div>
 
-                        <div class="template-library-filters">
+                        <form method="GET" action="{{ route('campaign-template.index') }}" class="template-library-filters">
                             <label class="template-library-search">
                                 <span class="template-library-search__icon">⌕</span>
-                                <input type="text" placeholder="Search template message">
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search template message">
                             </label>
 
                             <label class="template-library-filter">
                                 <span>Category Template</span>
-                                <select>
-                                    <option>All Category</option>
-                                    <option>Single Banner</option>
-                                    <option>Carousel</option>
+                                <select name="category">
+                                    <option value="">All Category</option>
+                                    <option value="Single Banner" @selected(request('category') === 'Single Banner')>Single Banner</option>
+                                    <option value="Carousel" @selected(request('category') === 'Carousel')>Carousel</option>
                                 </select>
                             </label>
 
                             <label class="template-library-filter">
                                 <span>Start date</span>
-                                <input type="text" placeholder="Start date">
+                                <input type="date" name="start_date" value="{{ request('start_date') }}">
                             </label>
 
                             <label class="template-library-filter">
                                 <span>End date</span>
-                                <input type="text" placeholder="End date">
+                                <input type="date" name="end_date" value="{{ request('end_date') }}">
                             </label>
-                        </div>
+                            <button type="submit" class="template-builder-secondary">Filter</button>
+                        </form>
 
                         <div class="template-library-table-wrap">
                             <table class="template-library-table">
@@ -345,23 +388,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($templateRows as $row)
+                                    @forelse ($templateRows as $row)
                                         <tr>
-                                            <td>{{ $row['name'] }}</td>
                                             <td>
-                                                <strong>{{ $row['date'] }}</strong>
-                                                <span>{{ $row['time'] }}</span>
-                                            </td>
-                                            <td>{{ $row['category'] }}</td>
-                                            <td>
-                                                <strong>{{ $row['language'] }}</strong>
-                                                <span>{{ $row['preview'] }}</span>
+                                                <a href="{{ route('campaign-template.show', $row) }}">{{ $row->name }}</a>
                                             </td>
                                             <td>
-                                                <span class="template-library-status">{{ $row['status'] }}</span>
+                                                <strong>{{ $row->created_at->format('d M Y') }}</strong>
+                                                <span>{{ $row->created_at->format('H:i') }} WIB</span>
+                                            </td>
+                                            <td>{{ $row->category }}</td>
+                                            <td>
+                                                <strong>{{ $row->language }}</strong>
+                                                <span>{{ \Illuminate\Support\Str::limit($row->body ?? '-', 80) }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="template-library-status">{{ $row->status }}</span>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="5">Belum ada template campaign.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -473,6 +522,7 @@
                 const templateButtonList = document.getElementById('templateButtonList');
                 const templatePreviewActions = document.getElementById('templatePreviewActions');
                 const templateButtonWarning = document.getElementById('templateButtonWarning');
+                const isTemplateRead = @json($isWaTemplateRead);
                 let templateButtonIndex = 0;
 
                 const syncTemplateBodyPreview = () => {
@@ -518,7 +568,10 @@ https://bit.ly/Fita_Combofit
 
                 syncTemplateBodyPreview();
                 templateBodyInput?.addEventListener('input', syncTemplateBodyPreview);
-                templateAssetInput?.addEventListener('change', syncTemplateAssetPreview);
+                if (!isTemplateRead) {
+                    syncTemplateAssetPreview();
+                    templateAssetInput?.addEventListener('change', syncTemplateAssetPreview);
+                }
 
                 const syncTemplateButtons = () => {
                     if (!templateButtonList || !templatePreviewActions || !templateAddButton || !templateButtonWarning) {

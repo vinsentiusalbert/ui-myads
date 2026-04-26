@@ -39,14 +39,14 @@
                     'key' => 'wa-location-based-area',
                     'label' => 'Location Based Area',
                     'icon' => 'location',
-                    'href' => '#',
+                    'href' => route('campaign.menu', ['channel' => 'wa-business', 'menu' => 'location-based-area']),
                     'interactive' => true,
                 ],
                 [
                     'key' => 'wa-campaign-template',
                     'label' => 'Campaign Template',
                     'icon' => 'template',
-                    'href' => route('campaign.menu', ['channel' => 'wa-business', 'menu' => 'campaign-template']),
+                    'href' => route('campaign-template.index'),
                     'interactive' => true,
                 ],
                 [

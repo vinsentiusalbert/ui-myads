@@ -45,7 +45,7 @@
                     'key' => 'wa-campaign-template',
                     'label' => 'Campaign Template',
                     'icon' => 'template',
-                    'href' => route('campaign.menu', ['channel' => 'wa-business', 'menu' => 'campaign-template']),
+                    'href' => route('campaign-template.index'),
                 ],
                 [
                     'key' => 'wa-targeted',

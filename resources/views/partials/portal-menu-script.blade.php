@@ -35,5 +35,13 @@
                 setMenuState(false);
             }
         });
+
+        document.querySelectorAll('[data-nav-toggle]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const parent = button.closest('[data-nav-group]');
+                const isOpen = parent?.classList.toggle('portal-nav__item--open');
+                button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+        });
     })();
 </script>

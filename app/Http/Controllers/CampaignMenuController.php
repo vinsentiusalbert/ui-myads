@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CampaignTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class CampaignMenuController extends Controller
 {
-    public function show(string $channel, string $menu): View
+    public function show(Request $request, string $channel, string $menu): View
     {
         $pages = $this->pages();
 
         abort_unless(isset($pages[$channel][$menu]), 404);
 
         $page = $pages[$channel][$menu];
+
+        if ($channel === 'wa-business' && $menu === 'campaign-template') {
+            return $this->listCampaignTemplates($request);
+        }
 
         if ($menu === 'location-based-area') {
             return view('campaign-lba', [
@@ -35,6 +41,86 @@ class CampaignMenuController extends Controller
             'channel' => $channel,
             'menu' => $menu,
             'page' => $page,
+        ]);
+    }
+
+    public function listCampaignTemplates(Request $request): View
+    {
+        $page = $this->pages()['wa-business']['campaign-template'];
+        $templates = CampaignTemplate::query()
+            ->when($request->filled('q'), function ($query) use ($request): void {
+                $search = $request->string('q')->toString();
+
+                $query->where(function ($query) use ($search): void {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('body', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->filled('category'), function ($query) use ($request): void {
+                $query->where('category', $request->string('category')->toString());
+            })
+            ->when($request->filled('start_date'), function ($query) use ($request): void {
+                $query->whereDate('created_at', '>=', $request->date('start_date'));
+            })
+            ->when($request->filled('end_date'), function ($query) use ($request): void {
+                $query->whereDate('created_at', '<=', $request->date('end_date'));
+            })
+            ->latest()
+            ->get();
+
+        return view('campaign-menu', [
+            'channel' => 'wa-business',
+            'menu' => 'campaign-template',
+            'page' => $page,
+            'templateRows' => $templates,
+            'templateCount' => CampaignTemplate::count(),
+            'approvedTemplateCount' => CampaignTemplate::where('status', 'APPROVED')->count(),
+        ]);
+    }
+
+    public function storeCampaignTemplate(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:campaign_templates,name'],
+            'template_type' => ['required', 'string', 'max:50'],
+            'category' => ['required', 'string', 'max:100'],
+            'language' => ['required', 'string', 'max:100'],
+            'header_type' => ['required', 'string', 'max:50'],
+            'asset' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf,mp4', 'max:10240'],
+            'body' => ['required', 'string', 'max:1024'],
+            'footer' => ['nullable', 'string', 'max:60'],
+        ]);
+
+        $assetPath = null;
+        if ($request->hasFile('asset')) {
+            $assetPath = $request->file('asset')->store('campaign-templates', 'public');
+        }
+
+        CampaignTemplate::create([
+            'name' => $validated['name'],
+            'template_type' => $validated['template_type'],
+            'category' => $validated['category'],
+            'language' => $validated['language'],
+            'header_type' => $validated['header_type'],
+            'asset_path' => $assetPath,
+            'body' => $validated['body'],
+            'footer' => $validated['footer'] ?? null,
+            'buttons' => [],
+            'status' => 'PENDING',
+        ]);
+
+        return redirect()
+            ->route('campaign-template.index')
+            ->with('status', 'Template campaign berhasil dibuat.');
+    }
+
+    public function showCampaignTemplate(CampaignTemplate $template): View
+    {
+        return view('campaign-menu', [
+            'channel' => 'wa-business',
+            'menu' => 'campaign-template',
+            'page' => $this->pages()['wa-business']['campaign-template'],
+            'templateRow' => $template,
         ]);
     }
 
