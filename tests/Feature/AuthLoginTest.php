@@ -82,4 +82,20 @@ class AuthLoginTest extends TestCase
         $response->assertSee('Konten Pesan Iklan');
         $response->assertSee('Atur Pengiriman');
     }
+
+    public function test_authenticated_user_can_open_sms_targeted_page(): void
+    {
+        $user = new User([
+            'name' => 'Ads Operator',
+            'email' => 'operator@myads.test',
+            'password' => 'password',
+        ]);
+
+        $response = $this->actingAs($user)->get('/campaign/sms/targeted');
+
+        $response->assertOk();
+        $response->assertSee('Buat Judul Iklan');
+        $response->assertSee('Konten Pesan Iklan');
+        $response->assertSee('Review & Pembayaran');
+    }
 }

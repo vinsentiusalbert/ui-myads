@@ -23,6 +23,14 @@ class CampaignMenuController extends Controller
             ]);
         }
 
+        if ($menu === 'targeted') {
+            return view('campaign-targeted', [
+                'channel' => $channel,
+                'menu' => $menu,
+                'page' => $page,
+            ]);
+        }
+
         return view('campaign-menu', [
             'channel' => $channel,
             'menu' => $menu,
@@ -100,11 +108,11 @@ class CampaignMenuController extends Controller
                     'description' => 'Halaman ini memetakan step pada deck targeted SMS: judul iklan, isi pesan, filter audience, jadwal kirim, review biaya, dan approval.',
                     'badge' => 'SMS Targeted',
                     'steps' => [
-                        'Judul campaign',
-                        'Konten pesan',
-                        'Filter audience',
-                        'Atur jadwal',
-                        'Review & approval',
+                        'Buat Konten Iklan',
+                        'Atur Profil Penerima',
+                        'Atur Pengiriman',
+                        'Review & Pembayaran',
+                        'Menunggu Persetujuan',
                     ],
                     'screenshots' => $targetedShots,
                 ],
@@ -144,13 +152,24 @@ class CampaignMenuController extends Controller
                     'description' => 'Tampilan mengikuti alur targeted dari deck sebagai baseline, lalu dipasang ke menu WA Business agar pengalaman antar menu tetap konsisten.',
                     'badge' => 'WA Targeted',
                     'steps' => [
-                        'Judul campaign',
-                        'Konten pesan',
-                        'Pilih audience',
-                        'Jadwalkan kirim',
-                        'Review & approval',
+                        'Buat Konten Iklan',
+                        'Atur Profil Penerima',
+                        'Atur Pengiriman',
+                        'Review & Pembayaran',
+                        'Menunggu Persetujuan',
                     ],
                     'screenshots' => $targetedShots,
+                ],
+                'campaign-template' => [
+                    'title' => 'WA Business Campaign Template',
+                    'headline' => 'Placeholder campaign template untuk WA Business',
+                    'description' => 'Menu ini disiapkan sebagai tempat template campaign WA Business. Untuk saat ini halamannya masih placeholder dan siap diisi pada tahap berikutnya.',
+                    'badge' => 'WA Template',
+                    'steps' => [
+                        'Pilih template',
+                        'Atur isi campaign',
+                        'Review template',
+                    ],
                 ],
             ],
         ];

@@ -78,8 +78,8 @@
 @endpush
 
 @section('content')
-    <section class="campaign-stepper-card">
-        <div class="campaign-stepper">
+    <section class="campaign-stepper-card campaign-stepper-card--five">
+        <div class="campaign-stepper campaign-stepper--five">
             @foreach ($page['steps'] as $index => $step)
                 <div class="campaign-step {{ $index === 0 ? 'campaign-step--active' : '' }}" data-campaign-step="{{ $index + 1 }}">
                     <span class="campaign-step__dot">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
@@ -274,7 +274,6 @@
             </aside>
         </div>
 
-        @if ($isTargeted)
         <div class="campaign-step-panel" data-campaign-panel="2" hidden>
             <section class="campaign-targeted-step-two">
                 <div class="campaign-targeted-step-two__section">
@@ -308,86 +307,121 @@
                             <div class="campaign-targeted-profile-grid">
                                 <div class="field-group campaign-field-group--compact">
                                     <label for="campaignTargetGender" class="field-label">Jenis Kelamin</label>
-                                    <select id="campaignTargetGender" class="text-input text-input--select">
-                                        <option value="">Jenis Kelamin</option>
-                                        <option>Laki-laki</option>
-                                        <option>Perempuan</option>
-                                        <option>Semua</option>
+                                    <select id="campaignTargetGender" class="campaign-search-multiselect" multiple data-placeholder="Cari jenis kelamin">
+                                        <option value="male">Laki-laki</option>
+                                        <option value="female">Perempuan</option>
+                                        <option value="all">Semua</option>
                                     </select>
                                 </div>
                                 <div class="field-group campaign-field-group--compact">
                                     <label for="campaignTargetAge" class="field-label">Rentang Umur</label>
-                                    <select id="campaignTargetAge" class="text-input text-input--select">
-                                        <option value="">Rentang Umur</option>
-                                        <option>&lt; 15 tahun</option>
-                                        <option>15 - 24 tahun</option>
-                                        <option>25 - 34 tahun</option>
-                                        <option>35 - 44 tahun</option>
-                                        <option>45+ tahun</option>
+                                    <select id="campaignTargetAge" class="campaign-search-multiselect" multiple data-placeholder="Cari rentang umur">
+                                        <option value="under-15">&lt; 15 tahun</option>
+                                        <option value="15-24">15 - 24 tahun</option>
+                                        <option value="25-34">25 - 34 tahun</option>
+                                        <option value="35-44">35 - 44 tahun</option>
+                                        <option value="45-plus">45+ tahun</option>
                                     </select>
                                 </div>
                                 <div class="field-group campaign-field-group--compact">
                                     <label for="campaignTargetOs" class="field-label">Tipe OS Handphone</label>
-                                    <select id="campaignTargetOs" class="text-input text-input--select">
-                                        <option value="">Tipe OS Handphone</option>
-                                        <option>Android</option>
-                                        <option>iOS</option>
-                                        <option>Semua</option>
+                                    <select id="campaignTargetOs" class="campaign-search-multiselect" multiple data-placeholder="Cari tipe OS handphone">
+                                        <option value="android">Android</option>
+                                        <option value="ios">iOS</option>
+                                        <option value="all">Semua</option>
                                     </select>
                                 </div>
                                 <div class="field-group campaign-field-group--compact">
                                     <label for="campaignTargetDataPackage" class="field-label">Penerima dengan Paket Data</label>
-                                    <select id="campaignTargetDataPackage" class="text-input text-input--select">
-                                        <option value="">Penerima dengan Paket Data</option>
-                                        <option>Aktif</option>
-                                        <option>Tidak Aktif</option>
-                                        <option>Semua</option>
+                                    <select id="campaignTargetDataPackage" class="campaign-search-multiselect" multiple data-placeholder="Cari status paket data">
+                                        <option value="active">Aktif</option>
+                                        <option value="inactive">Tidak Aktif</option>
+                                        <option value="all">Semua</option>
                                     </select>
                                 </div>
                                 <div class="field-group campaign-field-group--compact">
                                     <label for="campaignTargetHouseholdSpend" class="field-label">Tingkat Pengeluaran Rumah Tangga (per Bulan)</label>
-                                    <select id="campaignTargetHouseholdSpend" class="text-input text-input--select">
-                                        <option value="">Tingkat Pengeluaran Rumah Tangga</option>
-                                        <option>&lt; Rp 2.000.000</option>
-                                        <option>Rp 2.000.000 - Rp 5.000.000</option>
-                                        <option>Rp 5.000.000 - Rp 10.000.000</option>
-                                        <option>&gt; Rp 10.000.000</option>
+                                    <select id="campaignTargetHouseholdSpend" class="campaign-search-multiselect" multiple data-placeholder="Cari tingkat pengeluaran rumah tangga">
+                                        <option value="lt-2m">&lt; Rp 2.000.000</option>
+                                        <option value="2m-5m">Rp 2.000.000 - Rp 5.000.000</option>
+                                        <option value="5m-10m">Rp 5.000.000 - Rp 10.000.000</option>
+                                        <option value="gt-10m">&gt; Rp 10.000.000</option>
                                     </select>
                                 </div>
                                 <div class="field-group campaign-field-group--compact">
                                     <label for="campaignTargetMaritalStatus" class="field-label">Status Pernikahan</label>
-                                    <select id="campaignTargetMaritalStatus" class="text-input text-input--select">
-                                        <option value="">Marital Status</option>
-                                        <option>Single</option>
-                                        <option>Married</option>
-                                        <option>Semua</option>
+                                    <select id="campaignTargetMaritalStatus" class="campaign-search-multiselect" multiple data-placeholder="Cari status pernikahan">
+                                        <option value="single">Single</option>
+                                        <option value="married">Married</option>
+                                        <option value="all">Semua</option>
                                     </select>
                                 </div>
                                 <div class="field-group campaign-field-group--compact">
                                     <label for="campaignTargetLifestyle" class="field-label">Lifestyle Segment</label>
-                                    <select id="campaignTargetLifestyle" class="text-input text-input--select">
-                                        <option value="">Lifestyle Segment</option>
-                                        <option>Foodies</option>
-                                        <option>Traveler</option>
-                                        <option>Family</option>
-                                        <option>Semua</option>
+                                    <select id="campaignTargetLifestyle" class="campaign-search-multiselect" multiple data-placeholder="Cari lifestyle segment">
+                                        <option value="foodies">Foodies</option>
+                                        <option value="traveler">Traveler</option>
+                                        <option value="family">Family</option>
+                                        <option value="all">Semua</option>
                                     </select>
                                 </div>
                                 <div class="field-group campaign-field-group--compact">
                                     <label for="campaignTargetReligion" class="field-label">Agama</label>
-                                    <select id="campaignTargetReligion" class="text-input text-input--select">
-                                        <option value="">Agama</option>
-                                        <option>Islam</option>
-                                        <option>Kristen</option>
-                                        <option>Katolik</option>
-                                        <option>Hindu</option>
-                                        <option>Budha</option>
-                                        <option>Konghucu</option>
+                                    <select id="campaignTargetReligion" class="campaign-search-multiselect" multiple data-placeholder="Cari agama">
+                                        <option value="islam">Islam</option>
+                                        <option value="kristen">Kristen</option>
+                                        <option value="katolik">Katolik</option>
+                                        <option value="hindu">Hindu</option>
+                                        <option value="budha">Budha</option>
+                                        <option value="konghucu">Konghucu</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <a href="#" class="campaign-inline-link campaign-inline-link--strong campaign-inline-link--arrow campaign-inline-link--fit">Gunakan Pengaturan Audience</a>
+
+                        <div class="campaign-targeted-location-group">
+                            <div class="campaign-targeted-location-group__head">
+                                <h3>Lokasi Tempat Tinggal</h3>
+                                <button type="button" class="campaign-inline-action" id="campaignAddHomeLocation">
+                                    <span class="campaign-inline-action__icon">+</span>
+                                    <span>Tambah Lokasi Tempat Tinggal</span>
+                                </button>
+                            </div>
+                            <div class="campaign-targeted-location-list" id="campaignHomeLocationList">
+                            </div>
+                        </div>
+
+                        <div class="campaign-targeted-location-group">
+                            <div class="campaign-targeted-location-group__head">
+                                <h3>Lokasi Tempat Bekerja</h3>
+                                <button type="button" class="campaign-inline-action" id="campaignAddWorkLocation">
+                                    <span class="campaign-inline-action__icon">+</span>
+                                    <span>Tambah Lokasi Tempat Bekerja</span>
+                                </button>
+                            </div>
+                            <div class="campaign-targeted-location-list" id="campaignWorkLocationList">
+                            </div>
+                        </div>
+
+                        <label class="campaign-terms campaign-terms--compact">
+                            <input type="checkbox" id="campaignSaveTargetedProfile">
+                            <span>Simpan Pengaturan Profil Penerima</span>
+                        </label>
+
+                        <div class="campaign-targeted-estimate">
+                            <div>
+                                <h3>Hitung Estimasi Penerima Potensial</h3>
+                                <p>Hitung estimasi penerima terlebih dahulu sebelum melanjutkan ke tahap berikutnya.</p>
+                            </div>
+                            <div class="campaign-targeted-estimate__actions">
+                                <button type="button" class="submit-btn lba-primary-btn campaign-targeted-estimate__button" id="campaignTargetedEstimateButton">Hitung Penerima Potensial</button>
+                                <div class="campaign-estimate-card campaign-estimate-card--inline">
+                                    <span class="campaign-estimate-card__label">Estimasi Penerima Potensial</span>
+                                    <strong id="campaignTargetedEstimateValue">0</strong>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -406,8 +440,8 @@
                 </div>
             </section>
         </div>
-        @else
-        <div class="campaign-step-panel" data-campaign-panel="2" hidden>
+
+        <div class="campaign-step-panel" data-campaign-panel="3" hidden>
             <section class="campaign-step-two">
                 <div class="campaign-step-two__section">
                     <h2 class="campaign-block__title">Tentukan Jumlah Penerima yang Akan Dikirim</h2>
@@ -530,7 +564,7 @@
                 </div>
 
                 <div class="campaign-form-actions campaign-form-actions--step-two">
-                    <button type="button" class="campaign-outline-button campaign-step-nav-btn" id="campaignStepTwoBack">Sebelumnya</button>
+                    <button type="button" class="campaign-outline-button campaign-step-nav-btn" id="campaignStepThreeBack">Sebelumnya</button>
                     {{-- <button type="button" class="campaign-draft-btn">
                         <span class="campaign-draft-btn__icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24">
@@ -540,13 +574,12 @@
                         </span>
                         <span>Simpan Iklan Sebagai Draft</span>
                     </button> --}}
-                    <button type="button" class="submit-btn lba-primary-btn campaign-step-two__next" id="campaignStepTwoNext" disabled>Lanjutkan</button>
+                    <button type="button" class="submit-btn lba-primary-btn campaign-step-two__next" id="campaignStepThreeNext" disabled>Lanjutkan</button>
                 </div>
             </section>
         </div>
-        @endif
 
-        <div class="campaign-step-panel" data-campaign-panel="3" hidden>
+        <div class="campaign-step-panel" data-campaign-panel="4" hidden>
             <section class="campaign-review">
                 <div class="campaign-review__main">
                     <div class="campaign-review__hero">
@@ -617,7 +650,7 @@
                                 <h3>Waktu Pengiriman</h3>
                             </div>
                             <div class="campaign-review-card__actions">
-                                <button type="button" class="campaign-review-card__link" data-review-edit="2">Ubah</button>
+                                <button type="button" class="campaign-review-card__link" data-review-edit="3">Ubah</button>
                                 <button type="button" class="campaign-review-card__toggle" data-review-toggle="delivery">Tampilkan</button>
                             </div>
                         </div>
@@ -710,7 +743,7 @@
                     </div>
                 </aside>
                 <div class="campaign-form-actions campaign-form-actions--review campaign-form-actions--review-bottom">
-                    <button type="button" class="campaign-outline-button campaign-step-nav-btn" id="campaignStepThreeBack">Sebelumnya</button>
+                    <button type="button" class="campaign-outline-button campaign-step-nav-btn" id="campaignStepFourBack">Sebelumnya</button>
                 </div>
             </section>
         </div>
@@ -900,11 +933,19 @@
             const stepTwoBack = document.getElementById('campaignStepTwoBack');
             const stepTwoNext = document.getElementById('campaignStepTwoNext');
             const stepThreeBack = document.getElementById('campaignStepThreeBack');
+            const stepThreeNext = document.getElementById('campaignStepThreeNext');
+            const stepFourBack = document.getElementById('campaignStepFourBack');
             const targetedRecipient = document.getElementById('campaignTargetRecipient');
             const targetedProfileBuilder = document.getElementById('campaignTargetedProfileBuilder');
             const recipientProfile = document.getElementById('campaignRecipientProfile');
             const applyAudienceButton = document.getElementById('campaignApplyAudience');
             const targetedProfileFields = Array.from(document.querySelectorAll('#campaignTargetedProfileBuilder select')).filter((field) => field.id !== 'campaignRecipientProfile');
+            const homeLocationList = document.getElementById('campaignHomeLocationList');
+            const workLocationList = document.getElementById('campaignWorkLocationList');
+            const addHomeLocationButton = document.getElementById('campaignAddHomeLocation');
+            const addWorkLocationButton = document.getElementById('campaignAddWorkLocation');
+            const targetedEstimateButton = document.getElementById('campaignTargetedEstimateButton');
+            const targetedEstimateValue = document.getElementById('campaignTargetedEstimateValue');
             const scheduleList = document.getElementById('campaignScheduleList');
             const addScheduleButton = document.getElementById('campaignAddSchedule');
             const termsCheck = document.getElementById('campaignTermsCheck');
@@ -1010,6 +1051,7 @@
                         }
 
                         option.selected = !option.selected;
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
                         render(search.value);
                     });
 
@@ -1025,6 +1067,7 @@
                         }
 
                         option.selected = false;
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
                         render(search.value);
                     });
 
@@ -1057,16 +1100,14 @@
             };
 
             const syncCampaignStep = (stepNumber) => {
-                const visualStepNumber = isTargeted && stepNumber === 3 ? 4 : stepNumber;
-
                 campaignPanels.forEach((panel) => {
                     panel.hidden = panel.dataset.campaignPanel !== String(stepNumber);
                 });
 
                 campaignSteps.forEach((step) => {
                     const stepValue = Number(step.dataset.campaignStep);
-                    step.classList.toggle('campaign-step--active', stepValue === visualStepNumber);
-                    step.classList.toggle('campaign-step--completed', stepValue < visualStepNumber);
+                    step.classList.toggle('campaign-step--active', stepValue === stepNumber);
+                    step.classList.toggle('campaign-step--completed', stepValue < stepNumber);
                 });
 
                 if (sectionKicker) {
@@ -1075,8 +1116,9 @@
 
                 if (sectionHeading) {
                     sectionHeading.textContent =
-                        stepNumber === 2 ? 'Atur Pengiriman' :
-                        stepNumber === 3 ? 'Review & Pembayaran' :
+                        stepNumber === 2 ? 'Atur Profil Penerima' :
+                        stepNumber === 3 ? 'Atur Pengiriman' :
+                        stepNumber === 4 ? 'Review & Pembayaran' :
                         'Konten Pesan Iklan';
                 }
             };
@@ -1173,46 +1215,92 @@
 
             const profileTemplates = {
                 'muslim-family': {
-                    gender: 'Semua',
-                    age: '25 - 34 tahun',
-                    os: 'Android',
-                    dataPackage: 'Aktif',
-                    householdSpend: 'Rp 5.000.000 - Rp 10.000.000',
-                    maritalStatus: 'Married',
-                    lifestyle: 'Family',
-                    religion: 'Islam',
+                    gender: ['all'],
+                    age: ['25-34'],
+                    os: ['android'],
+                    dataPackage: ['active'],
+                    householdSpend: ['5m-10m'],
+                    maritalStatus: ['married'],
+                    lifestyle: ['family'],
+                    religion: ['islam'],
                 },
                 'young-professional': {
-                    gender: 'Semua',
-                    age: '25 - 34 tahun',
-                    os: 'iOS',
-                    dataPackage: 'Aktif',
-                    householdSpend: '> Rp 10.000.000',
-                    maritalStatus: 'Single',
-                    lifestyle: 'Traveler',
-                    religion: 'Semua',
+                    gender: ['all'],
+                    age: ['25-34'],
+                    os: ['ios'],
+                    dataPackage: ['active'],
+                    householdSpend: ['gt-10m'],
+                    maritalStatus: ['single'],
+                    lifestyle: ['traveler'],
+                    religion: [],
                 },
                 'urban-parent': {
-                    gender: 'Semua',
-                    age: '35 - 44 tahun',
-                    os: 'Android',
-                    dataPackage: 'Aktif',
-                    householdSpend: 'Rp 5.000.000 - Rp 10.000.000',
-                    maritalStatus: 'Married',
-                    lifestyle: 'Family',
-                    religion: 'Semua',
+                    gender: ['all'],
+                    age: ['35-44'],
+                    os: ['android'],
+                    dataPackage: ['active'],
+                    householdSpend: ['5m-10m'],
+                    maritalStatus: ['married'],
+                    lifestyle: ['family'],
+                    religion: [],
                 },
                 'budget-hunter': {
-                    gender: 'Semua',
-                    age: '15 - 24 tahun',
-                    os: 'Android',
-                    dataPackage: 'Tidak Aktif',
-                    householdSpend: '< Rp 2.000.000',
-                    maritalStatus: 'Single',
-                    lifestyle: 'Foodies',
-                    religion: 'Semua',
+                    gender: ['all'],
+                    age: ['15-24'],
+                    os: ['android'],
+                    dataPackage: ['inactive'],
+                    householdSpend: ['lt-2m'],
+                    maritalStatus: ['single'],
+                    lifestyle: ['foodies'],
+                    religion: [],
                 },
             };
+
+            const locationOptionsTemplate = () => `
+                <div class="campaign-targeted-location-grid">
+                    <div class="field-group campaign-field-group--compact">
+                        <label class="field-label">Provinsi</label>
+                        <select class="text-input text-input--select" data-location-select="province">
+                            <option value="">Provinsi</option>
+                            <option>DKI Jakarta</option>
+                            <option>Jawa Barat</option>
+                            <option>Banten</option>
+                            <option>Jawa Tengah</option>
+                        </select>
+                    </div>
+                    <div class="field-group campaign-field-group--compact">
+                        <label class="field-label">Kota</label>
+                        <select class="text-input text-input--select" data-location-select="city">
+                            <option value="">Kota</option>
+                            <option>Jakarta Pusat</option>
+                            <option>Jakarta Selatan</option>
+                            <option>Bandung</option>
+                            <option>Tangerang</option>
+                        </select>
+                    </div>
+                    <div class="field-group campaign-field-group--compact">
+                        <label class="field-label">Kecamatan</label>
+                        <select class="text-input text-input--select" data-location-select="district">
+                            <option value="">Kecamatan</option>
+                            <option>Tanah Abang</option>
+                            <option>Setiabudi</option>
+                            <option>Coblong</option>
+                            <option>Ciledug</option>
+                        </select>
+                    </div>
+                    <div class="field-group campaign-field-group--compact">
+                        <label class="field-label">Kelurahan</label>
+                        <select class="text-input text-input--select" data-location-select="subdistrict">
+                            <option value="">Kelurahan</option>
+                            <option>Kebon Melati</option>
+                            <option>Karet</option>
+                            <option>Dago</option>
+                            <option>Paninggilan</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="campaign-targeted-location-card__remove" data-remove-location>Hapus</button>
+            `;
 
             const syncTargetedProfileBuilder = () => {
                 if (!targetedProfileBuilder || !targetedRecipient) {
@@ -1222,6 +1310,42 @@
                 const shouldShow = targetedRecipient.value === 'profile-recipient';
                 targetedProfileBuilder.hidden = !shouldShow;
                 targetedProfileBuilder.classList.toggle('campaign-targeted-profile-builder--active', shouldShow);
+            };
+
+            const syncTargetedLocationRemoveState = (list) => {
+                const items = list?.querySelectorAll('[data-location-row]') || [];
+                items.forEach((item) => {
+                    const removeButton = item.querySelector('[data-remove-location]');
+                    if (removeButton) {
+                        removeButton.hidden = false;
+                    }
+                });
+            };
+
+            const addTargetedLocationRow = (type) => {
+                const list = type === 'home' ? homeLocationList : workLocationList;
+                if (!list) {
+                    return;
+                }
+
+                const card = document.createElement('article');
+                card.className = 'campaign-targeted-location-card';
+                card.dataset.locationRow = type;
+                card.innerHTML = locationOptionsTemplate();
+                list.appendChild(card);
+                syncTargetedLocationRemoveState(list);
+            };
+
+            const calculateTargetedEstimate = () => {
+                const profileScore = targetedProfileFields.reduce((total, field) => total + Array.from(field.options).filter((option) => option.selected).length, 0);
+                const homeScore = Array.from(homeLocationList?.querySelectorAll('[data-location-row] [data-location-select]') || []).filter((field) => field.value).length;
+                const workScore = Array.from(workLocationList?.querySelectorAll('[data-location-row] [data-location-select]') || []).filter((field) => field.value).length;
+                const base = 125000;
+                const computed = Math.max(0, base + (profileScore * 4500) + (homeScore * 3800) + (workScore * 4200));
+
+                if (targetedEstimateValue) {
+                    targetedEstimateValue.textContent = normalizeAudience(computed);
+                }
             };
 
             const syncReviewSummary = () => {
@@ -1249,9 +1373,9 @@
                 setText('campaignReviewAge', getSelectedTexts('campaign_age'));
                 setText('campaignReviewReligion', getSelectedTexts('campaign_religion'));
                 if (isTargeted) {
-                    const genderValue = document.getElementById('campaignTargetGender')?.value || recipientProfile?.selectedOptions?.[0]?.text || 'Semua';
-                    const ageValue = document.getElementById('campaignTargetAge')?.value || 'Semua';
-                    const religionValue = document.getElementById('campaignTargetReligion')?.value || 'Semua';
+                    const genderValue = getSelectedTexts('campaignTargetGender') || recipientProfile?.selectedOptions?.[0]?.text || 'Semua';
+                    const ageValue = getSelectedTexts('campaignTargetAge');
+                    const religionValue = getSelectedTexts('campaignTargetReligion');
 
                     setText('campaignReviewGender', genderValue);
                     setText('campaignReviewAge', ageValue);
@@ -1323,9 +1447,13 @@
 
             const syncStepTwoValidity = () => {
                 if (stepTwoNext) {
-                    stepTwoNext.disabled = isTargeted
-                        ? (!targetedRecipient?.value || (targetedRecipient.value === 'profile-recipient' && !recipientProfile?.value && !hasTargetedProfileFilters()))
-                        : !termsCheck?.checked;
+                    stepTwoNext.disabled = !targetedRecipient?.value || (targetedRecipient.value === 'profile-recipient' && !recipientProfile?.value && !hasTargetedProfileFilters());
+                }
+            };
+
+            const syncStepThreeValidity = () => {
+                if (stepThreeNext) {
+                    stepThreeNext.disabled = !termsCheck?.checked;
                 }
             };
 
@@ -1666,25 +1794,28 @@
             syncSchedulePreview(1);
             syncTargetedProfileBuilder();
             syncStepTwoValidity();
+            syncStepThreeValidity();
+            syncTargetedLocationRemoveState(homeLocationList);
+            syncTargetedLocationRemoveState(workLocationList);
+            calculateTargetedEstimate();
 
             openLocationModalButton?.addEventListener('click', openLocationModal);
             stepOneNext?.addEventListener('click', () => {
-                if (isTargeted) {
-                    syncCampaignStep(2);
-                    return;
-                }
-
                 syncCampaignStep(2);
             });
             stepTwoBack?.addEventListener('click', () => syncCampaignStep(1));
             stepTwoNext?.addEventListener('click', () => {
-                syncReviewSummary();
-                collapseReviewCards();
                 syncCampaignStep(3);
             });
-            stepThreeBack?.addEventListener('click', () => syncCampaignStep(isTargeted ? 1 : 2));
+            stepThreeBack?.addEventListener('click', () => syncCampaignStep(2));
+            stepThreeNext?.addEventListener('click', () => {
+                syncReviewSummary();
+                collapseReviewCards();
+                syncCampaignStep(4);
+            });
+            stepFourBack?.addEventListener('click', () => syncCampaignStep(3));
             addScheduleButton?.addEventListener('click', addScheduleItem);
-            termsCheck?.addEventListener('change', syncStepTwoValidity);
+            termsCheck?.addEventListener('change', syncStepThreeValidity);
             targetedRecipient?.addEventListener('change', () => {
                 syncTargetedProfileBuilder();
                 syncStepTwoValidity();
@@ -1712,14 +1843,44 @@
                 Object.entries(fieldMap).forEach(([fieldId, fieldValue]) => {
                     const field = document.getElementById(fieldId);
                     if (field) {
-                        field.value = fieldValue;
+                        Array.from(field.options).forEach((option) => {
+                            option.selected = Array.isArray(fieldValue) ? fieldValue.includes(option.value) : option.value === fieldValue;
+                        });
+                        field.dispatchEvent(new Event('change', { bubbles: true }));
                     }
                 });
 
                 syncStepTwoValidity();
             });
             targetedProfileFields.forEach((field) => {
-                field.addEventListener('change', syncStepTwoValidity);
+                field.addEventListener('change', () => {
+                    syncStepTwoValidity();
+                    calculateTargetedEstimate();
+                });
+            });
+            addHomeLocationButton?.addEventListener('click', () => addTargetedLocationRow('home'));
+            addWorkLocationButton?.addEventListener('click', () => addTargetedLocationRow('work'));
+            targetedEstimateButton?.addEventListener('click', calculateTargetedEstimate);
+            [homeLocationList, workLocationList].forEach((list) => {
+                list?.addEventListener('click', (event) => {
+                    const removeButton = event.target.closest('[data-remove-location]');
+                    if (!removeButton) {
+                        return;
+                    }
+
+                    const row = removeButton.closest('[data-location-row]');
+                    if (row) {
+                        row.remove();
+                        syncTargetedLocationRemoveState(list);
+                        calculateTargetedEstimate();
+                    }
+                });
+
+                list?.addEventListener('change', (event) => {
+                    if (event.target.closest('[data-location-select]')) {
+                        calculateTargetedEstimate();
+                    }
+                });
             });
             scheduleList?.addEventListener('click', (event) => {
                 const trigger = event.target.closest('[data-time-trigger]');
@@ -1740,7 +1901,7 @@
                 const editButton = event.target.closest('[data-review-edit]');
                 if (editButton) {
                     const editStep = Number(editButton.dataset.reviewEdit);
-                    syncCampaignStep(isTargeted && editStep === 2 ? 1 : editStep);
+                    syncCampaignStep(editStep);
                     return;
                 }
 

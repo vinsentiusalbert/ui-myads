@@ -10,6 +10,17 @@
         <link rel="stylesheet" href="{{ asset('css/auth-portal.css') }}">
     </head>
     <body>
+        @php
+            $isWaTemplate = $channel === 'wa-business' && $menu === 'campaign-template';
+            $isWaTemplateCreate = $isWaTemplate && request()->query('view') === 'create';
+            $templateRows = [
+                ['name' => 'idc_397_260414_ar4_simpati_wfh', 'date' => '14 Apr 2026', 'time' => '11:04 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Butuh kuota besar untuk Work From Home tapi budget terbatas? SIMPATI p...', 'status' => 'APPROVED'],
+                ['name' => 'idc_236_251105_ar4_hvc_local_bas...', 'date' => '05 Nov 2025', 'time' => '14:59 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Tabe ada Flash Sale Super Seru khusus untuk pelanggan Prioritas. Kuota 6...', 'status' => 'APPROVED'],
+                ['name' => 'idc_235_251105_ar4_hvc_spcial_off...', 'date' => '05 Nov 2025', 'time' => '14:52 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Karena Kamu Prioritas, Kenyamanan Harus Tanpa Batas. Dengan kuota bes...', 'status' => 'APPROVED'],
+                ['name' => 'idc_234_251105_ar4_hvc_churn_pu...', 'date' => '05 Nov 2025', 'time' => '14:51 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Kami merindukan Anda untuk menikmati benefit pelanggan Prioritas. Flash ...', 'status' => 'APPROVED'],
+                ['name' => 'idc_233_251105_ar4_hvc_urgency_...', 'date' => '05 Nov 2025', 'time' => '14:48 WIB', 'category' => 'Single Banner', 'language' => 'Indonesia', 'preview' => 'Kuota besar 65GB hanya 5 hari di Flash Sales Super Seru, nikmati kuota be...', 'status' => 'APPROVED'],
+            ];
+        @endphp
         <main class="portal-shell">
             <button type="button" class="portal-overlay" data-menu-close aria-label="Tutup menu"></button>
 
@@ -46,14 +57,14 @@
 
                         @php
                             $menus = [
-                                'sms' => ['label' => 'SMS', 'items' => ['location-based-area' => 'Location Based Area', 'broadcast' => 'Broadcast', 'targeted' => 'Targeted']],
-                                'wa-business' => ['label' => 'WA Business', 'items' => ['location-based-area' => 'Location Based Area', 'broadcast' => 'Broadcast', 'targeted' => 'Targeted']],
+                                'sms' => ['label' => 'SMS', 'items' => ['location-based-area' => 'Location Based Area', 'targeted' => 'Targeted']],
+                                'wa-business' => ['label' => 'WA Business', 'items' => ['location-based-area' => 'Location Based Area', 'campaign-template' => 'Campaign Template', 'targeted' => 'Targeted']],
                             ];
                         @endphp
 
                         @foreach ($menus as $navChannel => $navData)
-                            <div class="portal-nav__item {{ $channel === $navChannel ? 'portal-nav__item--active' : '' }}">
-                                <div class="portal-nav__head">
+                            <div class="portal-nav__item portal-nav__item--dropdown {{ $channel === $navChannel ? 'portal-nav__item--active portal-nav__item--open' : '' }}" data-nav-group>
+                                <button type="button" class="portal-nav__head portal-nav__toggle" data-nav-toggle aria-expanded="{{ $channel === $navChannel ? 'true' : 'false' }}">
                                     <span class="portal-nav__icon-wrap">
                                         @if ($navChannel === 'sms')
                                             <svg class="portal-nav__svg" viewBox="0 0 24 24" aria-hidden="true">
@@ -68,7 +79,12 @@
                                         @endif
                                     </span>
                                     <span>{{ $navData['label'] }}</span>
-                                </div>
+                                    <span class="portal-nav__caret" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </button>
                                 <div class="portal-subnav">
                                     @foreach ($navData['items'] as $navMenu => $navLabel)
                                         <a href="{{ route('campaign.menu', ['channel' => $navChannel, 'menu' => $navMenu]) }}" class="portal-subnav__item {{ $channel === $navChannel && $menu === $navMenu ? 'portal-subnav__item--active' : '' }}">
@@ -128,7 +144,230 @@
                     </div>
                 </header>
 
-                <div class="portal-content">
+                <div class="portal-content {{ $isWaTemplate ? 'portal-content--template-library' : '' }}">
+                    @if ($isWaTemplate)
+                    @if ($isWaTemplateCreate)
+                    <section class="template-builder-hero">
+                        <h1 class="template-builder-hero__title">Create Campaign Template</h1>
+                    </section>
+
+                    <section class="template-builder-layout">
+                        <div class="template-builder-main">
+                            <article class="template-builder-card">
+                                <h2>Template Preview</h2>
+                                <p>Choose the category that best describes your message template. Then, select the type of message that you want to send.</p>
+
+                                <label class="template-builder-choice template-builder-choice--active">
+                                    <input type="radio" name="template_type" checked>
+                                    <span class="template-builder-choice__dot"></span>
+                                    <span>
+                                        <strong>Simple Message</strong>
+                                        <small>Custom send promotions with only have 1 upload image Capability</small>
+                                    </span>
+                                </label>
+
+                                <label class="template-builder-choice">
+                                    <input type="radio" name="template_type">
+                                    <span class="template-builder-choice__dot"></span>
+                                    <span>
+                                        <strong>Carousel Cards</strong>
+                                        <small>Send promotion with custom multiple image using carousel component</small>
+                                    </span>
+                                </label>
+                            </article>
+
+                            <article class="template-builder-card">
+                                <h2>Template name and language</h2>
+                                <div class="template-builder-field">
+                                    <label>Name your template</label>
+                                    <input type="text" value="campaign_whatsapp">
+                                </div>
+                            </article>
+
+                            <article class="template-builder-card">
+                                <h2>Content</h2>
+                                <p>Fill in the header, body and footer section of your template</p>
+
+                                <div class="template-builder-field">
+                                    <label>Header (optional)</label>
+                                    <select>
+                                        <option>None</option>
+                                        <option>Image</option>
+                                        <option>Video</option>
+                                        <option>Document</option>
+                                    </select>
+                                </div>
+
+                                <div class="template-builder-field">
+                                    <label>Asset</label>
+                                    <p class="template-builder-field__hint">You can upload videos, images, PDFs, or locations.</p>
+                                    <label class="template-builder-upload" for="templateAssetInput">
+                                        <input type="file" id="templateAssetInput" class="template-builder-upload__input" accept="image/*">
+                                        <span class="template-builder-upload__icon">☁</span>
+                                        <strong id="templateAssetLabel">Upload an asset</strong>
+                                        <small>(Ensure your asset meets the format and size requirement)</small>
+                                        <span class="template-builder-upload__link">Learn more about supported format assets</span>
+                                    </label>
+                                </div>
+
+                                <div class="template-builder-editor">
+                                    <div class="template-builder-editor__toolbar">
+                                        <select>
+                                            <option>Paragraph</option>
+                                        </select>
+                                        <button type="button">B</button>
+                                        <button type="button"><i>I</i></button>
+                                        <button type="button"><u>U</u></button>
+                                        <button type="button">S</button>
+                                        <button type="button">•</button>
+                                        <button type="button">1.</button>
+                                    </div>
+                                    <textarea id="templateBodyInput" placeholder="Write something awesome..."></textarea>
+                                    <span class="template-builder-editor__count" id="templateBodyCount">0 / 1024</span>
+                                </div>
+
+                                <div class="template-builder-inline-actions">
+                                    <button type="button" class="template-builder-ai">Creating body content with AI <span>Token quota: 0</span></button>
+                                    <button type="button" class="template-builder-secondary">Add Body Variable</button>
+                                </div>
+
+                                <div class="template-builder-field">
+                                    <label>Footer (optional)</label>
+                                    <input type="text" maxlength="60">
+                                </div>
+                            </article>
+
+                            <article class="template-builder-card">
+                                <h2>Buttons</h2>
+                                <button type="button" class="template-builder-add-button" id="templateAddButton">
+                                    <span>+</span>
+                                    <span>Add Button</span>
+                                </button>
+                                <p class="template-builder-button-warning" id="templateButtonWarning" hidden>Button hanya bisa 2.</p>
+
+                                <div class="template-builder-button-list" id="templateButtonList"></div>
+
+                                <div class="template-builder-tip">
+                                    <strong>We recomend adding the marketing op-out button</strong>
+                                    <p>Allow customers to request to opout all marketing messages. this can help reduce blocks from customers and increase your quality rating</p>
+                                </div>
+                            </article>
+                        </div>
+
+                        <aside class="template-builder-preview">
+                            <article class="template-builder-preview__card">
+                                <h2>Template Preview</h2>
+                                <div class="template-builder-phone">
+                                    <div class="template-builder-phone__message">
+                                        <img src="{{ asset('assets/logo.png') }}" alt="Preview asset" class="template-builder-phone__image" id="templatePreviewImage">
+                                        <div class="template-builder-phone__body" id="templatePreviewBody">
+                                            Halo Pelanggan Setia ComboFit, kamu mendapatkan akses Exercise Plan GRATIS selama 30 hari 🔥
+
+                                            ✅ Akses ke program latihan fisik oleh Coach profesional
+                                            ✅ Panduan video latihan yang mudah diikuti
+                                            ✅ Tips dan trik kebugaran
+
+                                            Aktifkan akunmu di link ini
+                                            https://bit.ly/Fita_Combofit
+
+                                            #SehatMakinNikmat bersama Fita!
+                                        </div>
+                                        <div class="template-builder-phone__actions" id="templatePreviewActions">
+                                            <div class="template-builder-phone__cta">Coba Sekarang</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-builder-preview__foot">
+                                    <strong>This template is good for:</strong>
+                                    <p>Welcome messages, promotions, offers, coupons, newsletters, announcements</p>
+                                </div>
+                            </article>
+                        </aside>
+                    </section>
+                    @else
+                    <section class="template-library-hero">
+                        <div>
+                            <h1 class="template-library-hero__title">Template Message</h1>
+                        </div>
+                        <a href="{{ route('campaign.menu', ['channel' => 'wa-business', 'menu' => 'campaign-template', 'view' => 'create']) }}" class="template-library-hero__cta">
+                            <span>+</span>
+                            <span>Create Template</span>
+                        </a>
+                    </section>
+
+                    <section class="template-library-card">
+                        <div class="template-library-tabs">
+                            <button type="button" class="template-library-tab template-library-tab--active">
+                                <span>All</span>
+                                <strong>117</strong>
+                            </button>
+                            <button type="button" class="template-library-tab">
+                                <span>Approved</span>
+                                <strong>117</strong>
+                            </button>
+                        </div>
+
+                        <div class="template-library-filters">
+                            <label class="template-library-search">
+                                <span class="template-library-search__icon">⌕</span>
+                                <input type="text" placeholder="Search template message">
+                            </label>
+
+                            <label class="template-library-filter">
+                                <span>Category Template</span>
+                                <select>
+                                    <option>All Category</option>
+                                    <option>Single Banner</option>
+                                    <option>Carousel</option>
+                                </select>
+                            </label>
+
+                            <label class="template-library-filter">
+                                <span>Start date</span>
+                                <input type="text" placeholder="Start date">
+                            </label>
+
+                            <label class="template-library-filter">
+                                <span>End date</span>
+                                <input type="text" placeholder="End date">
+                            </label>
+                        </div>
+
+                        <div class="template-library-table-wrap">
+                            <table class="template-library-table">
+                                <thead>
+                                    <tr>
+                                        <th>Template Name</th>
+                                        <th>Time Added</th>
+                                        <th>Category</th>
+                                        <th>Language</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($templateRows as $row)
+                                        <tr>
+                                            <td>{{ $row['name'] }}</td>
+                                            <td>
+                                                <strong>{{ $row['date'] }}</strong>
+                                                <span>{{ $row['time'] }}</span>
+                                            </td>
+                                            <td>{{ $row['category'] }}</td>
+                                            <td>
+                                                <strong>{{ $row['language'] }}</strong>
+                                                <span>{{ $row['preview'] }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="template-library-status">{{ $row['status'] }}</span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    @endif
+                    @else
                     <section class="flow-hero">
                         <div class="flow-hero__copy">
                             <p class="flow-badge">{{ $page['badge'] }}</p>
@@ -173,6 +412,7 @@
                             @endforeach
                         </div>
                     </section>
+                    @endif
                 </div>
             </section>
         </main>
@@ -214,6 +454,170 @@
                         setMenuState(false);
                     }
                 });
+
+                document.querySelectorAll('[data-nav-toggle]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        const parent = button.closest('[data-nav-group]');
+                        const isOpen = parent?.classList.toggle('portal-nav__item--open');
+                        button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    });
+                });
+
+                const templateBodyInput = document.getElementById('templateBodyInput');
+                const templateBodyCount = document.getElementById('templateBodyCount');
+                const templatePreviewBody = document.getElementById('templatePreviewBody');
+                const templateAssetInput = document.getElementById('templateAssetInput');
+                const templatePreviewImage = document.getElementById('templatePreviewImage');
+                const templateAssetLabel = document.getElementById('templateAssetLabel');
+                const templateAddButton = document.getElementById('templateAddButton');
+                const templateButtonList = document.getElementById('templateButtonList');
+                const templatePreviewActions = document.getElementById('templatePreviewActions');
+                const templateButtonWarning = document.getElementById('templateButtonWarning');
+                let templateButtonIndex = 0;
+
+                const syncTemplateBodyPreview = () => {
+                    if (!templateBodyInput || !templatePreviewBody || !templateBodyCount) {
+                        return;
+                    }
+
+                    const value = templateBodyInput.value.trim();
+                    templatePreviewBody.textContent = value || `Halo Pelanggan Setia ComboFit, kamu mendapatkan akses Exercise Plan GRATIS selama 30 hari 🔥
+
+✅ Akses ke program latihan fisik oleh Coach profesional
+✅ Panduan video latihan yang mudah diikuti
+✅ Tips dan trik kebugaran
+
+Aktifkan akunmu di link ini
+https://bit.ly/Fita_Combofit
+
+#SehatMakinNikmat bersama Fita!`;
+                    templateBodyCount.textContent = `${templateBodyInput.value.length} / 1024`;
+                };
+
+                const syncTemplateAssetPreview = () => {
+                    if (!templateAssetInput || !templatePreviewImage || !templateAssetLabel) {
+                        return;
+                    }
+
+                    const [file] = templateAssetInput.files || [];
+                    if (!file) {
+                        templatePreviewImage.src = "{{ asset('assets/logo.png') }}";
+                        templateAssetLabel.textContent = 'Upload an asset';
+                        return;
+                    }
+
+                    templateAssetLabel.textContent = file.name;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        if (typeof event.target?.result === 'string') {
+                            templatePreviewImage.src = event.target.result;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                syncTemplateBodyPreview();
+                templateBodyInput?.addEventListener('input', syncTemplateBodyPreview);
+                templateAssetInput?.addEventListener('change', syncTemplateAssetPreview);
+
+                const syncTemplateButtons = () => {
+                    if (!templateButtonList || !templatePreviewActions || !templateAddButton || !templateButtonWarning) {
+                        return;
+                    }
+
+                    const cards = Array.from(templateButtonList.querySelectorAll('[data-template-button-card]'));
+                    templateButtonWarning.hidden = cards.length < 2;
+                    templateAddButton.disabled = cards.length >= 2;
+
+                    if (!cards.length) {
+                        templatePreviewActions.innerHTML = '<div class="template-builder-phone__cta">Coba Sekarang</div>';
+                        return;
+                    }
+
+                    templatePreviewActions.innerHTML = cards.map((card) => {
+                        const label = card.querySelector('[data-template-button-text]')?.value?.trim() || 'Visit website';
+                        return `<div class="template-builder-phone__cta">${label}</div>`;
+                    }).join('');
+                };
+
+                const bindTemplateButtonCard = (card) => {
+                    const textInput = card.querySelector('[data-template-button-text]');
+                    const urlInput = card.querySelector('[data-template-button-url]');
+                    const removeButton = card.querySelector('[data-template-button-remove]');
+                    const textMeta = card.querySelector('[data-template-button-meta]');
+                    const urlMeta = card.querySelector('[data-template-url-meta]');
+
+                    const syncCard = () => {
+                        if (textMeta && textInput) {
+                            textMeta.textContent = `${textInput.value.length} / 25`;
+                        }
+                        if (urlMeta && urlInput) {
+                            urlMeta.textContent = `${urlInput.value.length} / 2000`;
+                        }
+                        syncTemplateButtons();
+                    };
+
+                    textInput?.addEventListener('input', syncCard);
+                    urlInput?.addEventListener('input', syncCard);
+                    removeButton?.addEventListener('click', () => {
+                        card.remove();
+                        syncTemplateButtons();
+                    });
+
+                    syncCard();
+                };
+
+                templateAddButton?.addEventListener('click', () => {
+                    if (!templateButtonList || templateButtonList.querySelectorAll('[data-template-button-card]').length >= 2) {
+                        syncTemplateButtons();
+                        return;
+                    }
+
+                    templateButtonIndex += 1;
+                    const card = document.createElement('article');
+                    card.className = 'template-builder-button-card';
+                    card.dataset.templateButtonCard = String(templateButtonIndex);
+                    card.innerHTML = `
+                        <div class="template-builder-button-card__head">
+                            <h3>Call to Action</h3>
+                        </div>
+                        <div class="template-builder-button-card__grid">
+                            <div class="template-builder-button-card__field">
+                                <label>Type of action</label>
+                                <select>
+                                    <option>Visit website</option>
+                                </select>
+                            </div>
+                            <div class="template-builder-button-card__field">
+                                <label>Button Text</label>
+                                <input type="text" value="Visit website" maxlength="25" data-template-button-text>
+                                <span class="template-builder-button-card__meta" data-template-button-meta>13 / 25</span>
+                            </div>
+                            <div class="template-builder-button-card__field">
+                                <label>Url Type</label>
+                                <select>
+                                    <option>static</option>
+                                </select>
+                            </div>
+                            <div class="template-builder-button-card__field">
+                                <label>Website URL</label>
+                                <input type="text" value="" maxlength="2000" placeholder="Website URL" data-template-button-url>
+                                <span class="template-builder-button-card__meta" data-template-url-meta>0 / 2000</span>
+                            </div>
+                            <button type="button" class="template-builder-button-card__remove" data-template-button-remove aria-label="Hapus tombol">×</button>
+                        </div>
+                        <div class="template-builder-button-card__alert">
+                            <span>⚠</span>
+                            <p>Direct WhatsApp links are not allowed in CTA buttons as per Meta's policy. Please place the link (e.g. wa.me/6281xxx) in the message body instead</p>
+                        </div>
+                    `;
+
+                    templateButtonList.appendChild(card);
+                    bindTemplateButtonCard(card);
+                    syncTemplateButtons();
+                });
+
+                syncTemplateButtons();
             })();
         </script>
     </body>

@@ -38,5 +38,10 @@
             <path d="M12 3v4M12 17v4M3 12h4M17 12h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
             <circle cx="12" cy="12" r="1.8" fill="currentColor"/>
         </svg>
+    @elseif ($icon === 'template')
+        <svg viewBox="0 0 24 24">
+            <rect x="4" y="5" width="16" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M8 9h8M8 12h8M8 15h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
     @endif
 @endif

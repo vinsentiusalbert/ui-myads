@@ -22,17 +22,10 @@
                     'interactive' => true,
                 ],
                 [
-                    'key' => 'sms-broadcast',
-                    'label' => 'Broadcast',
-                    'icon' => 'broadcast',
-                    'href' => '#',
-                    'interactive' => true,
-                ],
-                [
                     'key' => 'sms-targeted',
                     'label' => 'Targeted',
                     'icon' => 'targeted',
-                    'href' => '#',
+                    'href' => route('campaign.menu', ['channel' => 'sms', 'menu' => 'targeted']),
                     'interactive' => true,
                 ],
             ],
@@ -50,17 +43,17 @@
                     'interactive' => true,
                 ],
                 [
-                    'key' => 'wa-broadcast',
-                    'label' => 'Broadcast',
-                    'icon' => 'broadcast',
-                    'href' => '#',
+                    'key' => 'wa-campaign-template',
+                    'label' => 'Campaign Template',
+                    'icon' => 'template',
+                    'href' => route('campaign.menu', ['channel' => 'wa-business', 'menu' => 'campaign-template']),
                     'interactive' => true,
                 ],
                 [
                     'key' => 'wa-targeted',
                     'label' => 'Targeted',
                     'icon' => 'targeted',
-                    'href' => '#',
+                    'href' => route('campaign.menu', ['channel' => 'wa-business', 'menu' => 'targeted']),
                     'interactive' => true,
                 ],
             ],
@@ -106,7 +99,7 @@
                 <p class="portal-stats__label">Menu utama tampil</p>
             </div>
             <div class="portal-stats__item">
-                <p class="portal-stats__value">6</p>
+                <p class="portal-stats__value">4</p>
                 <p class="portal-stats__label">Submenu placeholder</p>
             </div>
             <div class="portal-stats__item">
@@ -131,7 +124,6 @@
                 </div>
                 <div class="portal-service-list">
                     <span class="portal-service-list__item">Location Based Area belum diisi.</span>
-                    <span class="portal-service-list__item">Broadcast belum diisi.</span>
                     <span class="portal-service-list__item">Targeted belum diisi.</span>
                 </div>
             </article>
@@ -143,7 +135,7 @@
                 </div>
                 <div class="portal-service-list">
                     <span class="portal-service-list__item">Location Based Area belum diisi.</span>
-                    <span class="portal-service-list__item">Broadcast belum diisi.</span>
+                    <span class="portal-service-list__item">Campaign Template belum diisi.</span>
                     <span class="portal-service-list__item">Targeted belum diisi.</span>
                 </div>
             </article>
