@@ -164,15 +164,6 @@
                 dashboardLink.closest('.portal-nav__item')?.classList.add('portal-nav__item--active');
             });
 
-            document.querySelectorAll('[data-nav-toggle]').forEach((button) => {
-                button.addEventListener('click', () => {
-                    const parent = button.closest('[data-nav-group]');
-                    const isOpen = parent.classList.toggle('portal-nav__item--open');
-
-                    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-                });
-            });
-
             subnavLinks.forEach((link) => {
                 link.addEventListener('click', (event) => {
                     const isPlaceholder = link.getAttribute('href') === '#';

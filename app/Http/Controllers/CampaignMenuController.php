@@ -21,19 +21,73 @@ class CampaignMenuController extends Controller
             return $this->listCampaignTemplates($request);
         }
 
-        if ($menu === 'location-based-area') {
-            return view('campaign-lba', [
+        if ($channel === 'wa-business' && $menu === 'location-based-area') {
+            return view('campaign-wa-lba', [
                 'channel' => $channel,
                 'menu' => $menu,
                 'page' => $page,
             ]);
         }
 
-        if ($menu === 'targeted') {
-            return view('campaign-targeted', [
+        if ($menu === 'location-based-area') {
+            $rows = collect($this->campaignRows($channel, $menu));
+            $view = $request->query('view');
+
+            if ($view === 'create') {
+                return view('campaign-lba.create', [
+                    'channel' => $channel,
+                    'menu' => $menu,
+                    'page' => $page,
+                ]);
+            }
+
+            if ($view === 'show') {
+                $campaignRow = $rows->firstWhere('id', (string) $request->query('id')) ?? $rows->first();
+
+                return view('campaign-lba.show', [
+                    'channel' => $channel,
+                    'menu' => $menu,
+                    'page' => $page,
+                    'campaignRow' => $campaignRow,
+                ]);
+            }
+
+            return view('campaign-lba.index', [
                 'channel' => $channel,
                 'menu' => $menu,
                 'page' => $page,
+                'campaignRows' => $rows,
+            ]);
+        }
+
+        if ($menu === 'targeted') {
+            $rows = collect($this->campaignRows($channel, $menu));
+            $view = $request->query('view');
+
+            if ($view === 'create') {
+                return view('campaign-targeted.create', [
+                    'channel' => $channel,
+                    'menu' => $menu,
+                    'page' => $page,
+                ]);
+            }
+
+            if ($view === 'show') {
+                $campaignRow = $rows->firstWhere('id', (string) $request->query('id')) ?? $rows->first();
+
+                return view('campaign-targeted.show', [
+                    'channel' => $channel,
+                    'menu' => $menu,
+                    'page' => $page,
+                    'campaignRow' => $campaignRow,
+                ]);
+            }
+
+            return view('campaign-targeted.index', [
+                'channel' => $channel,
+                'menu' => $menu,
+                'page' => $page,
+                'campaignRows' => $rows,
             ]);
         }
 
@@ -68,7 +122,15 @@ class CampaignMenuController extends Controller
             ->latest()
             ->get();
 
-        return view('campaign-menu', [
+        if ($request->query('view') === 'create') {
+            return view('campaign-wa-template.create', [
+                'channel' => 'wa-business',
+                'menu' => 'campaign-template',
+                'page' => $page,
+            ]);
+        }
+
+        return view('campaign-wa-template.index', [
             'channel' => 'wa-business',
             'menu' => 'campaign-template',
             'page' => $page,
@@ -116,12 +178,39 @@ class CampaignMenuController extends Controller
 
     public function showCampaignTemplate(CampaignTemplate $template): View
     {
-        return view('campaign-menu', [
+        return view('campaign-wa-template.show', [
             'channel' => 'wa-business',
             'menu' => 'campaign-template',
             'page' => $this->pages()['wa-business']['campaign-template'],
             'templateRow' => $template,
         ]);
+    }
+
+    private function campaignRows(string $channel, string $menu): array
+    {
+        $rows = [
+            'sms' => [
+                'location-based-area' => [
+                    ['id' => '1642248', 'date' => '22 Apr 2026', 'title' => 'grandhika', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Location Based Advertising', 'channel_type' => 'SMS', 'status_detail' => 'Sukses: 1.500 Gagal: 0', 'total_price' => 'Rp 300.000'],
+                    ['id' => '1640146', 'date' => '19 Apr 2026', 'title' => 'Sehat dan Bugar MyAds CFD', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Location Based Advertising', 'channel_type' => 'LBA', 'status_detail' => 'Sukses: 8.769 Gagal: 1.231', 'total_price' => 'Rp 0'],
+                    ['id' => '1638713', 'date' => '15 Apr 2026', 'title' => 'promosi mall jakarta', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Location Based Advertising', 'channel_type' => 'SMS', 'status_detail' => 'Sukses: 3 Gagal: 2', 'total_price' => 'Rp 1.815'],
+                ],
+                'targeted' => [
+                    ['id' => '1724401', 'date' => '24 Apr 2026', 'title' => 'promo_fypparfumery', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Targeted', 'channel_type' => 'SMS', 'status_detail' => 'Sukses: 25 Gagal: 24', 'total_price' => 'Rp 15.125'],
+                    ['id' => '1723304', 'date' => '18 Apr 2026', 'title' => 'test perfume', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Targeted', 'channel_type' => 'SMS', 'status_detail' => 'Sukses: 2 Gagal: 0', 'total_price' => 'Rp 1.210'],
+                    ['id' => '1719988', 'date' => '11 Apr 2026', 'title' => 'testing blast', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Targeted', 'channel_type' => 'SMS', 'status_detail' => 'Sukses: 4 Gagal: 0', 'total_price' => 'Rp 2.420'],
+                ],
+            ],
+            'wa-business' => [
+                'targeted' => [
+                    ['id' => '1824401', 'date' => '25 Apr 2026', 'title' => 'promo_wa_targeted', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Whatsapp Business', 'channel_type' => 'WA Targeted', 'status_detail' => 'Sukses: 1.920 Gagal: 12', 'total_price' => 'Rp 210.000'],
+                    ['id' => '1821220', 'date' => '21 Apr 2026', 'title' => 'blast komunitas sehat', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Whatsapp Business', 'channel_type' => 'WA Targeted', 'status_detail' => 'Sukses: 840 Gagal: 5', 'total_price' => 'Rp 92.400'],
+                    ['id' => '1819032', 'date' => '17 Apr 2026', 'title' => 'promo outlet weekend', 'operator' => 'TELKOMSEL', 'category' => 'Iklan Whatsapp Business', 'channel_type' => 'WA Targeted', 'status_detail' => 'Sukses: 430 Gagal: 0', 'total_price' => 'Rp 47.300'],
+                ],
+            ],
+        ];
+
+        return $rows[$channel][$menu] ?? [];
     }
 
     private function pages(): array
@@ -206,16 +295,14 @@ class CampaignMenuController extends Controller
             'wa-business' => [
                 'location-based-area' => [
                     'title' => 'WA Business Location Based Area',
-                    'headline' => 'Dummy flow WA Business berbasis lokasi',
-                    'description' => 'Tampilan ini memakai fungsi dummy yang sama seperti LBA SMS namun dengan konteks channel WA Business agar tiap menu sudah terpasang sesuai fungsi dasarnya.',
+                    'headline' => 'Flow WA Business LBA dimulai dari pemilihan template pesan',
+                    'description' => 'Tahap awal WA Business LBA dimulai dari memilih template pesan, lalu dilanjutkan ke target penerima, pengiriman, dan review pembayaran.',
                     'badge' => 'WA LBA',
                     'steps' => [
-                        'Pilih kategori',
-                        'Buat judul',
-                        'Konten pesan',
-                        'Atur lokasi',
-                        'Atur profil',
-                        'Review',
+                        'Pilih Template Pesan',
+                        'Atur Target Penerima',
+                        'Atur Pengiriman',
+                        'Review & Pembayaran',
                     ],
                 ],
                 'broadcast' => [
